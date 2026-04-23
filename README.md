@@ -1,8 +1,8 @@
 # Tempero Mineiro ERP
 
-[![Backend CI](https://github.com/msouza34/ERP-Tempero-Mineiro/actions/workflows/backend-ci.yml/badge.svg?branch=main)](https://github.com/msouza34/ERP-Tempero-Mineiro/actions/workflows/backend-ci.yml)
+[![Backend CI](https://github.com/msouza34/tempero-mineiro/actions/workflows/backend-ci.yml/badge.svg?branch=main)](https://github.com/msouza34/tempero-mineiro/actions/workflows/backend-ci.yml)
 
-Backend para ERP de bares e restaurantes com Spring Boot, PostgreSQL e Docker.
+Backend para ERP de bares e restaurantes com Spring Boot, PostgreSQL e Docker, com fluxo de entrega inteligente (proprio, Uber ou automatico).
 
 ## Tecnologias
 
@@ -20,6 +20,7 @@ Backend para ERP de bares e restaurantes com Spring Boot, PostgreSQL e Docker.
 - Gestao de mesas
 - Cardapio, categorias e produtos
 - Pedidos
+- Entrega inteligente com fallback
 - Cozinha com SSE
 - Caixa e pagamentos
 - Estoque
@@ -131,6 +132,7 @@ Quando `APP_SEED_ENABLED=true`, o sistema cria:
 - `POST /pedidos/{id}/itens`
 - `DELETE /pedidos/{id}/itens/{itemId}`
 - `PATCH /pedidos/{id}/status`
+- `POST /pedidos/{id}/entrega`
 - `GET /cozinha/pedidos`
 - `GET /cozinha/stream`
 - `GET /caixa/mesas/{mesaId}/resumo`
@@ -150,6 +152,62 @@ Quando `APP_SEED_ENABLED=true`, o sistema cria:
 - `GET /public/{restaurantSlug}/menu?mesaToken=...`
 - `POST /public/{restaurantSlug}/orders`
 - `GET /public/qr?text=...`
+
+## Entrega inteligente
+
+Endpoint principal:
+
+- `POST /pedidos/{id}/entrega`
+
+Regras implementadas:
+
+1. Anti conflito: so permite iniciar quando `statusEntrega=AGUARDANDO`.
+2. Pagamento:
+- `DINHEIRO` forca `PROPRIO`.
+- `ONLINE` permite `PROPRIO`, `UBER` ou `AUTOMATICO`.
+3. Modo automatico:
+- Se existe entregador disponivel e distancia `< 5km`, usa `PROPRIO`.
+- Se nao tiver entregador ou estiver em horario de pico, usa `UBER`.
+4. Fallback:
+- Se `PROPRIO` falhar (sem aceite em ate 2 minutos simulados), chama `UBER` automaticamente.
+5. Diferencial anti duplicidade:
+- Se ja existir `uberDeliveryId`, bloqueia nova chamada.
+
+Enums de entrega:
+
+- `TipoEntrega`: `PROPRIO`, `UBER`, `AUTOMATICO`
+- `FormaPagamento`: `DINHEIRO`, `ONLINE`
+- `StatusEntrega`: `AGUARDANDO`, `EM_PROCESSAMENTO`, `ENVIADO`, `ENTREGUE`, `ERRO`
+
+Request de exemplo:
+
+```json
+{
+  "tipoEntrega": "AUTOMATICO",
+  "formaPagamento": "ONLINE",
+  "distanciaEntrega": 3.2
+}
+```
+
+Response de exemplo:
+
+```json
+{
+  "pedidoId": 101,
+  "tipoEntregaSolicitada": "AUTOMATICO",
+  "tipoEntregaExecutada": "PROPRIO",
+  "formaPagamento": "ONLINE",
+  "statusEntrega": "ENTREGUE",
+  "distanciaEntrega": 3.2,
+  "uberDeliveryId": null,
+  "fallbackAcionado": false,
+  "mensagem": "Entrega iniciada com sucesso."
+}
+```
+
+Observacao:
+
+- No fluxo atual, apos enviar para o provedor de entrega, o servico finaliza o pedido de entrega no mesmo processamento e retorna `ENTREGUE`.
 
 ## Testes
 

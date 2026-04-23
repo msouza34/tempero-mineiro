@@ -4,7 +4,7 @@
 
 O Tempero Mineiro ERP e um backend REST para operacao de bares e restaurantes. O sistema concentra autenticacao, gestao de mesas, cardapio, pedidos, cozinha, caixa, estoque, relatorios, usuarios e endpoints publicos para cardapio digital e QR Code.
 
-O projeto esta em modo backend-only. A interface operacional principal hoje e a documentacao OpenAPI exposta pelo Swagger em `http://localhost:8080/swagger-ui.html`.
+O projeto esta em modo backend-only. Em ambiente `dev`, a interface operacional principal e a documentacao OpenAPI no Swagger (`http://localhost:8080/swagger-ui.html`).
 
 ## Objetivo do sistema
 
@@ -61,7 +61,7 @@ O objetivo do sistema e oferecer uma base unica para a rotina operacional de um 
 
 ### Opcao 1: Docker Compose
 
-Na raiz do repositorio:
+Na raiz do repositorio, copie `.env.example` para `.env` e rode:
 
 ```bash
 docker compose up -d --build
@@ -72,7 +72,7 @@ Servicos esperados:
 - API: `http://localhost:8080`
 - Swagger: `http://localhost:8080/swagger-ui.html`
 - Healthcheck: `http://localhost:8080/actuator/health`
-- PostgreSQL: `localhost:5432`
+- PostgreSQL: apenas rede interna do Docker (nao publicado no host)
 
 ### Opcao 2: Maven
 
@@ -82,12 +82,13 @@ Servicos esperados:
 
 ```bash
 cd backend
+set SPRING_PROFILES_ACTIVE=dev
 mvn spring-boot:run
 ```
 
 ## Credenciais de seed
 
-Quando `APP_SEED_ENABLED=true`, o sistema cria um restaurante demo e os seguintes usuarios:
+Quando `APP_SEED_ENABLED=true` (tipicamente em `dev`), o sistema cria um restaurante demo e os seguintes usuarios:
 
 - `admin@temperomineiro.com` / `123456`
 - `gerente@temperomineiro.com` / `123456`

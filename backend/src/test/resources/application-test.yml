@@ -16,6 +16,10 @@ spring:
       mode: never
 
 app:
+  auth:
+    allow-public-register: true
+  swagger:
+    enabled: true
   seed:
     enabled: false
   jwt:

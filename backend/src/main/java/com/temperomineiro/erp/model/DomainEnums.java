@@ -57,5 +57,23 @@ public final class DomainEnums {
         SALAO,
         CARDAPIO_DIGITAL
     }
-}
 
+    public enum TipoEntrega {
+        PROPRIO,
+        UBER,
+        AUTOMATICO
+    }
+
+    public enum FormaPagamento {
+        DINHEIRO,
+        ONLINE
+    }
+
+    public enum StatusEntrega {
+        AGUARDANDO,
+        EM_PROCESSAMENTO,
+        ENVIADO,
+        ENTREGUE,
+        ERRO
+    }
+}

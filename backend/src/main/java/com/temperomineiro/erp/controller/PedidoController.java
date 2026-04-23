@@ -1,8 +1,10 @@
 package com.temperomineiro.erp.controller;
 
 import com.temperomineiro.erp.dto.CommonDto;
+import com.temperomineiro.erp.dto.EntregaDto;
 import com.temperomineiro.erp.dto.PedidoDto;
 import com.temperomineiro.erp.model.DomainEnums.PedidoStatus;
+import com.temperomineiro.erp.service.EntregaService;
 import com.temperomineiro.erp.service.PedidoService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PedidoController {
 
     private final PedidoService pedidoService;
+    private final EntregaService entregaService;
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN','GERENTE','GARCOM','COZINHA','CAIXA')")
@@ -65,5 +68,12 @@ public class PedidoController {
     @PreAuthorize("hasAnyRole('ADMIN','GERENTE','GARCOM','COZINHA')")
     public PedidoDto.PedidoResponse updateStatus(@PathVariable Long id, @Valid @RequestBody PedidoDto.AtualizarStatusPedidoRequest request) {
         return pedidoService.updateStatus(id, request);
+    }
+
+    @PostMapping("/{id}/entrega")
+    @PreAuthorize("hasAnyRole('ADMIN','GERENTE','GARCOM','CAIXA')")
+    public EntregaDto.EntregaResponse iniciarEntrega(@PathVariable Long id,
+                                                     @Valid @RequestBody(required = false) EntregaDto.IniciarEntregaRequest request) {
+        return entregaService.iniciarEntrega(id, request);
     }
 }

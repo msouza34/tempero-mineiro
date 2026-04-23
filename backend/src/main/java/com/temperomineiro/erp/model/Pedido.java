@@ -1,7 +1,10 @@
 package com.temperomineiro.erp.model;
 
 import com.temperomineiro.erp.model.DomainEnums.OrderOrigin;
+import com.temperomineiro.erp.model.DomainEnums.FormaPagamento;
 import com.temperomineiro.erp.model.DomainEnums.PedidoStatus;
+import com.temperomineiro.erp.model.DomainEnums.StatusEntrega;
+import com.temperomineiro.erp.model.DomainEnums.TipoEntrega;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -70,6 +73,21 @@ public class Pedido extends BaseEntity {
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal total;
 
+    @Enumerated(EnumType.STRING)
+    private TipoEntrega tipoEntrega;
+
+    @Enumerated(EnumType.STRING)
+    private StatusEntrega statusEntrega;
+
+    @Enumerated(EnumType.STRING)
+    private FormaPagamento formaPagamento;
+
+    @Column(precision = 8, scale = 2)
+    private BigDecimal distanciaEntrega;
+
+    @Column(length = 120)
+    private String uberDeliveryId;
+
     @Column(nullable = false)
     private OffsetDateTime abertoEm;
 
@@ -82,4 +100,3 @@ public class Pedido extends BaseEntity {
     @Column
     private OffsetDateTime fechadoEm;
 }
-

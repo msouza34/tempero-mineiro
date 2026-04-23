@@ -1,7 +1,9 @@
 package com.temperomineiro.erp.config;
 
 import com.temperomineiro.erp.security.JwtAuthenticationFilter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,7 +32,31 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    JwtAuthenticationFilter jwtAuthenticationFilter,
-                                                   AuthenticationProvider authenticationProvider) throws Exception {
+                                                   AuthenticationProvider authenticationProvider,
+                                                   @Value("${app.auth.allow-public-register:false}") boolean allowPublicRegister,
+                                                   @Value("${app.swagger.enabled:false}") boolean allowSwaggerPublic) throws Exception {
+        List<String> publicPaths = new ArrayList<>(List.of(
+                "/auth/login",
+                "/api/auth/login",
+                "/public/**",
+                "/api/public/**",
+                "/actuator/health"
+        ));
+
+        if (allowPublicRegister) {
+            publicPaths.add("/auth/register");
+            publicPaths.add("/api/auth/register");
+        }
+
+        if (allowSwaggerPublic) {
+            publicPaths.add("/v3/api-docs/**");
+            publicPaths.add("/api/v3/api-docs/**");
+            publicPaths.add("/swagger-ui/**");
+            publicPaths.add("/api/swagger-ui/**");
+            publicPaths.add("/swagger-ui.html");
+            publicPaths.add("/api/swagger-ui.html");
+        }
+
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
@@ -43,19 +69,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/auth/**",
-                                "/api/auth/**",
-                                "/public/**",
-                                "/api/public/**",
-                                "/v3/api-docs/**",
-                                "/api/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/api/swagger-ui/**",
-                                "/swagger-ui.html",
-                                "/api/swagger-ui.html",
-                                "/actuator/health"
-                        ).permitAll()
+                        .requestMatchers(publicPaths.toArray(String[]::new)).permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

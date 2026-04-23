@@ -1,7 +1,10 @@
 package com.temperomineiro.erp.dto;
 
 import com.temperomineiro.erp.model.DomainEnums.OrderOrigin;
+import com.temperomineiro.erp.model.DomainEnums.FormaPagamento;
 import com.temperomineiro.erp.model.DomainEnums.PedidoStatus;
+import com.temperomineiro.erp.model.DomainEnums.StatusEntrega;
+import com.temperomineiro.erp.model.DomainEnums.TipoEntrega;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
@@ -29,7 +32,10 @@ public final class PedidoDto {
             @NotNull OrderOrigin origem,
             @NotEmpty @Valid List<PedidoItemRequest> itens,
             @DecimalMin("0.00") BigDecimal desconto,
-            @DecimalMin("0.00") BigDecimal taxaServico
+            @DecimalMin("0.00") BigDecimal taxaServico,
+            TipoEntrega tipoEntrega,
+            FormaPagamento formaPagamento,
+            @DecimalMin("0.00") BigDecimal distanciaEntrega
     ) {
     }
 
@@ -61,6 +67,11 @@ public final class PedidoDto {
             BigDecimal desconto,
             BigDecimal taxaServico,
             BigDecimal total,
+            TipoEntrega tipoEntrega,
+            StatusEntrega statusEntrega,
+            FormaPagamento formaPagamento,
+            BigDecimal distanciaEntrega,
+            String uberDeliveryId,
             OffsetDateTime abertoEm,
             OffsetDateTime prontoEm,
             OffsetDateTime entregueEm,
@@ -68,4 +79,3 @@ public final class PedidoDto {
     ) {
     }
 }
-

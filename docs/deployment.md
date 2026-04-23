@@ -62,13 +62,16 @@ curl http://localhost:8080/actuator/health
 
 | Variavel | Recomendacao |
 | --- | --- |
-| `SPRING_DATASOURCE_URL` | apontar para o PostgreSQL de producao |
-| `SPRING_DATASOURCE_USERNAME` | usar usuario dedicado |
-| `SPRING_DATASOURCE_PASSWORD` | usar segredo forte |
-| `APP_JWT_SECRET` | trocar o valor padrao por uma chave privada forte |
+| `SPRING_PROFILES_ACTIVE` | definir `prod` |
+| `POSTGRES_DB` | usar nome de banco dedicado |
+| `POSTGRES_USER` | usar usuario dedicado |
+| `POSTGRES_PASSWORD` | usar segredo forte |
+| `APP_JWT_SECRET` | usar chave privada forte (minimo 32 bytes) |
 | `APP_PUBLIC_BASE_URL` | usar o dominio publico da API |
 | `APP_CORS_ALLOWED_ORIGINS` | restringir aos dominios reais |
 | `APP_SEED_ENABLED` | definir `false` |
+| `APP_SWAGGER_ENABLED` | definir `false` |
+| `APP_ALLOW_PUBLIC_REGISTER` | definir `false` |
 
 ## Persistencia de dados
 
@@ -103,6 +106,8 @@ Ao usar Nginx, garanta que:
 
 - usar segredo JWT exclusivo por ambiente
 - desativar seed de demonstracao
+- desativar Swagger em producao
+- desativar cadastro publico de restaurante
 - restringir CORS
 - configurar HTTPS
 - monitorar `GET /actuator/health`
@@ -117,7 +122,7 @@ Fluxo recomendado:
 1. atualizar o codigo no servidor
 2. rebuildar as imagens
 3. subir novamente os containers
-4. validar healthcheck e Swagger
+4. validar healthcheck e endpoints criticos
 
 Comando:
 

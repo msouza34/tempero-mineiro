@@ -3,7 +3,7 @@
 ## Visao geral
 
 - Base URL local: `http://localhost:8080`
-- Swagger UI: `http://localhost:8080/swagger-ui.html`
+- Swagger UI: `http://localhost:8080/swagger-ui.html` (quando `APP_SWAGGER_ENABLED=true`)
 - Healthcheck: `GET /actuator/health`
 - Formato principal: JSON
 - Autenticacao: Bearer JWT
@@ -88,7 +88,7 @@ Falhas sao padronizadas pelo `GlobalExceptionHandler`:
 
 | Metodo | Endpoint | Auth | Perfis | Descricao |
 | --- | --- | --- | --- | --- |
-| `POST` | `/auth/register` | Nao | Publico | Cadastra restaurante e usuario administrador |
+| `POST` | `/auth/register` | Nao | Publico | Cadastra restaurante e usuario administrador (somente quando `APP_ALLOW_PUBLIC_REGISTER=true`) |
 | `POST` | `/auth/login` | Nao | Publico | Realiza login e retorna JWT |
 
 Exemplo de cadastro inicial:
@@ -256,6 +256,7 @@ Exemplo de response:
 | `POST` | `/pedidos/{id}/itens` | `ADMIN`, `GERENTE`, `GARCOM` | Adiciona item ao pedido |
 | `DELETE` | `/pedidos/{id}/itens/{itemId}` | `ADMIN`, `GERENTE`, `GARCOM` | Remove item do pedido |
 | `PATCH` | `/pedidos/{id}/status` | `ADMIN`, `GERENTE`, `GARCOM`, `COZINHA` | Atualiza status do pedido |
+| `POST` | `/pedidos/{id}/entrega` | `ADMIN`, `GERENTE`, `GARCOM`, `CAIXA` | Inicia fluxo inteligente de entrega (proprio/uber/automatico) |
 
 Query params de `GET /pedidos`:
 

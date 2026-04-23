@@ -2,7 +2,7 @@
 
 [![Backend CI](https://github.com/msouza34/ERP-Tempero-Mineiro/actions/workflows/backend-ci.yml/badge.svg?branch=main)](https://github.com/msouza34/ERP-Tempero-Mineiro/actions/workflows/backend-ci.yml)
 
-Backend para ERP de bares e restaurantes com Spring Boot, PostgreSQL, Docker e Swagger.
+Backend para ERP de bares e restaurantes com Spring Boot, PostgreSQL e Docker.
 
 ## Tecnologias
 
@@ -27,7 +27,20 @@ Backend para ERP de bares e restaurantes com Spring Boot, PostgreSQL, Docker e S
 - Usuarios e perfis
 - Endpoints publicos para menu e QR Code
 
-## Como rodar com Docker
+## Modos de execucao
+
+- `dev`: seed, Swagger e cadastro publico habilitados
+- `prod`: seed, Swagger e cadastro publico desabilitados por padrao
+
+## Como rodar com Docker (dev)
+
+1. Copie o arquivo de exemplo e ajuste os valores:
+
+```bash
+cp .env.example .env
+```
+
+2. Suba os servicos:
 
 ```bash
 docker compose up -d --build
@@ -37,16 +50,17 @@ Servicos:
 
 - Backend API: `http://localhost:8080`
 - Swagger: `http://localhost:8080/swagger-ui.html`
-- PostgreSQL: `localhost:5432`
+- PostgreSQL: exposto apenas na rede interna do Docker (nao publicado na maquina host)
 
 ## Como rodar em desenvolvimento
 
 ```bash
 cd backend
+set SPRING_PROFILES_ACTIVE=dev
 mvn spring-boot:run
 ```
 
-## Primeiro acesso no Swagger
+## Primeiro acesso no Swagger (dev)
 
 1. Abra `http://localhost:8080/swagger-ui.html`
 2. No topo da documentacao, abra o grupo `Autenticacao`
@@ -69,7 +83,7 @@ Bearer SEU_TOKEN
 
 Depois disso, os endpoints protegidos ficam liberados no Swagger.
 
-## Credenciais seed
+## Credenciais seed (somente dev)
 
 Quando `APP_SEED_ENABLED=true`, o sistema cria:
 
@@ -81,13 +95,16 @@ Quando `APP_SEED_ENABLED=true`, o sistema cria:
 
 ## Variaveis importantes
 
-- `SPRING_DATASOURCE_URL`
-- `SPRING_DATASOURCE_USERNAME`
-- `SPRING_DATASOURCE_PASSWORD`
+- `SPRING_PROFILES_ACTIVE` (`dev` ou `prod`)
+- `POSTGRES_DB`
+- `POSTGRES_USER`
+- `POSTGRES_PASSWORD`
 - `APP_JWT_SECRET`
 - `APP_PUBLIC_BASE_URL`
 - `APP_CORS_ALLOWED_ORIGINS`
 - `APP_SEED_ENABLED`
+- `APP_SWAGGER_ENABLED`
+- `APP_ALLOW_PUBLIC_REGISTER`
 
 `APP_PUBLIC_BASE_URL` define a base usada para gerar links e QR Codes das mesas. Em backend-only, os QR Codes apontam para:
 
@@ -97,8 +114,8 @@ Quando `APP_SEED_ENABLED=true`, o sistema cria:
 
 ### Autenticacao
 
-- `POST /auth/register`
 - `POST /auth/login`
+- `POST /auth/register` (somente quando `APP_ALLOW_PUBLIC_REGISTER=true`)
 
 ### Operacao
 

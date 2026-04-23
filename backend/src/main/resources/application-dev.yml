@@ -1,0 +1,13 @@
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+app:
+  auth:
+    allow-public-register: true
+  seed:
+    enabled: true
+  swagger:
+    enabled: true

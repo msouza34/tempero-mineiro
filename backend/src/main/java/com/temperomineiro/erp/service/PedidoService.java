@@ -5,9 +5,12 @@ import com.temperomineiro.erp.dto.PedidoDto;
 import com.temperomineiro.erp.dto.PublicDto;
 import com.temperomineiro.erp.exception.BusinessException;
 import com.temperomineiro.erp.exception.ResourceNotFoundException;
+import com.temperomineiro.erp.model.DomainEnums.FormaPagamento;
 import com.temperomineiro.erp.model.DomainEnums.MesaStatus;
 import com.temperomineiro.erp.model.DomainEnums.OrderOrigin;
 import com.temperomineiro.erp.model.DomainEnums.PedidoStatus;
+import com.temperomineiro.erp.model.DomainEnums.StatusEntrega;
+import com.temperomineiro.erp.model.DomainEnums.TipoEntrega;
 import com.temperomineiro.erp.model.ItemPedido;
 import com.temperomineiro.erp.model.Mesa;
 import com.temperomineiro.erp.model.Pedido;
@@ -64,7 +67,10 @@ public class PedidoService {
                 request.observacoes(),
                 request.itens(),
                 defaultValue(request.desconto()),
-                defaultValue(request.taxaServico())
+                defaultValue(request.taxaServico()),
+                defaultTipoEntrega(request.tipoEntrega()),
+                defaultFormaPagamento(request.formaPagamento()),
+                defaultValue(request.distanciaEntrega())
         );
         return toResponse(pedido);
     }
@@ -83,6 +89,9 @@ public class PedidoService {
                 request.observacoes(),
                 items,
                 BigDecimal.ZERO,
+                BigDecimal.ZERO,
+                TipoEntrega.AUTOMATICO,
+                FormaPagamento.ONLINE,
                 BigDecimal.ZERO
         );
         return toResponse(pedido);
@@ -160,7 +169,10 @@ public class PedidoService {
                                String observacoes,
                                List<PedidoDto.PedidoItemRequest> itemRequests,
                                BigDecimal desconto,
-                               BigDecimal taxaServico) {
+                               BigDecimal taxaServico,
+                               TipoEntrega tipoEntrega,
+                               FormaPagamento formaPagamento,
+                               BigDecimal distanciaEntrega) {
         if (!mesa.isAtiva()) {
             throw new BusinessException("Mesa inativa não pode receber pedidos.");
         }
@@ -176,6 +188,10 @@ public class PedidoService {
                 .desconto(desconto)
                 .taxaServico(taxaServico)
                 .total(BigDecimal.ZERO)
+                .tipoEntrega(tipoEntrega)
+                .statusEntrega(StatusEntrega.AGUARDANDO)
+                .formaPagamento(formaPagamento)
+                .distanciaEntrega(distanciaEntrega)
                 .abertoEm(OffsetDateTime.now())
                 .itens(new ArrayList<>())
                 .build();
@@ -229,6 +245,14 @@ public class PedidoService {
         return value == null ? BigDecimal.ZERO : value;
     }
 
+    private TipoEntrega defaultTipoEntrega(TipoEntrega tipoEntrega) {
+        return tipoEntrega == null ? TipoEntrega.AUTOMATICO : tipoEntrega;
+    }
+
+    private FormaPagamento defaultFormaPagamento(FormaPagamento formaPagamento) {
+        return formaPagamento == null ? FormaPagamento.ONLINE : formaPagamento;
+    }
+
     public PedidoDto.PedidoResponse toResponse(Pedido pedido) {
         return new PedidoDto.PedidoResponse(
                 pedido.getId(),
@@ -254,6 +278,11 @@ public class PedidoService {
                 pedido.getDesconto(),
                 pedido.getTaxaServico(),
                 pedido.getTotal(),
+                pedido.getTipoEntrega(),
+                pedido.getStatusEntrega(),
+                pedido.getFormaPagamento(),
+                pedido.getDistanciaEntrega(),
+                pedido.getUberDeliveryId(),
                 pedido.getAbertoEm(),
                 pedido.getProntoEm(),
                 pedido.getEntregueEm(),

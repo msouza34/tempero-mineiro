@@ -19,18 +19,25 @@ server:
   port: ${SERVER_PORT:8080}
 
 springdoc:
+  api-docs:
+    enabled: ${APP_SWAGGER_ENABLED:false}
   swagger-ui:
+    enabled: ${APP_SWAGGER_ENABLED:false}
     path: /swagger-ui.html
 
 app:
   jwt:
-    secret: ${APP_JWT_SECRET:tempero-mineiro-secret-key-super-segura-2026}
+    secret: ${APP_JWT_SECRET}
     expiration-ms: ${APP_JWT_EXPIRATION_MS:86400000}
   cors:
     allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost,http://localhost:8080}
   public-base-url: ${APP_PUBLIC_BASE_URL:http://localhost:8080}
+  auth:
+    allow-public-register: ${APP_ALLOW_PUBLIC_REGISTER:false}
+  swagger:
+    enabled: ${APP_SWAGGER_ENABLED:false}
   seed:
-    enabled: ${APP_SEED_ENABLED:true}
+    enabled: ${APP_SEED_ENABLED:false}
 
 logging:
   level:

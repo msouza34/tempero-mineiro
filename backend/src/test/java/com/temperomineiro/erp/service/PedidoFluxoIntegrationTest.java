@@ -11,7 +11,9 @@ import com.temperomineiro.erp.dto.PedidoDto;
 import com.temperomineiro.erp.model.DomainEnums.MesaStatus;
 import com.temperomineiro.erp.model.DomainEnums.OrderOrigin;
 import com.temperomineiro.erp.model.DomainEnums.PedidoStatus;
+import com.temperomineiro.erp.model.DomainEnums.FormaPagamento;
 import com.temperomineiro.erp.model.DomainEnums.RoleName;
+import com.temperomineiro.erp.model.DomainEnums.TipoEntrega;
 import com.temperomineiro.erp.model.DomainEnums.UnitMeasure;
 import com.temperomineiro.erp.model.Restaurante;
 import com.temperomineiro.erp.model.Role;
@@ -121,7 +123,10 @@ class PedidoFluxoIntegrationTest {
                 OrderOrigin.SALAO,
                 List.of(new PedidoDto.PedidoItemRequest(produto.id(), 2, "Caprichar na couve")),
                 BigDecimal.ZERO,
-                BigDecimal.ZERO
+                BigDecimal.ZERO,
+                TipoEntrega.AUTOMATICO,
+                FormaPagamento.ONLINE,
+                new BigDecimal("3.50")
         ));
 
         assertNotNull(pedido.id());

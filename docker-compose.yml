@@ -4,15 +4,13 @@ services:
     container_name: tempero-mineiro-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: tempero_mineiro
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5432:5432"
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d tempero_mineiro"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -27,13 +25,16 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/tempero_mineiro
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
-      APP_JWT_SECRET: tempero-mineiro-secret-key-super-segura-2026
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      APP_JWT_SECRET: ${APP_JWT_SECRET}
       APP_CORS_ALLOWED_ORIGINS: ${APP_CORS_ALLOWED_ORIGINS:-http://localhost,http://localhost:8080}
       APP_PUBLIC_BASE_URL: ${APP_PUBLIC_BASE_URL:-http://localhost:8080}
-      APP_SEED_ENABLED: "true"
+      APP_SEED_ENABLED: ${APP_SEED_ENABLED:-true}
+      APP_SWAGGER_ENABLED: ${APP_SWAGGER_ENABLED:-true}
+      APP_ALLOW_PUBLIC_REGISTER: ${APP_ALLOW_PUBLIC_REGISTER:-true}
     ports:
       - "8080:8080"
     healthcheck:
